@@ -20,9 +20,10 @@ function rawBodyMiddleware(req: Request, res: Response, next: NextFunction): voi
 }
 
 router.post(
-  '/webhooks/clerk',
+  '/clerk',
   rawBodyMiddleware,
   asyncHandler(async (req: Request & { rawBody?: string }, res: Response) => {
+    logger.info({ url: req.url, path: req.path }, 'Webhook route hit');
     const secret = env.CLERK_WEBHOOK_SECRET;
 
     if (!secret) {
