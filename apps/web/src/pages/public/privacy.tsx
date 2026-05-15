@@ -1,5 +1,5 @@
 import { ArrowLeft, ShieldCheck } from 'lucide-react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 
 export function PrivacyPage() {

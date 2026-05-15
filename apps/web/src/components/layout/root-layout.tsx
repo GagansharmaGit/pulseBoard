@@ -1,7 +1,6 @@
 import { Outlet, Link } from 'react-router-dom'
 import { SignInButton, UserButton, useAuth } from '@clerk/react'
 import { Toaster } from '@/components/ui/toaster'
-import { BarChart3 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Footer } from './footer'
 

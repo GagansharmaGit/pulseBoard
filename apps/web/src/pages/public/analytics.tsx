@@ -130,11 +130,13 @@ export function AnalyticsPage() {
             </Button>
 
             <Dialog>
-              <DialogTrigger asChild>
+            <DialogTrigger
+              render={
                 <Button variant="ghost" size="sm" className="h-8 px-3 text-xs text-muted-foreground hover:text-white hover:bg-white/6">
                   <QrCode className="mr-1.5 h-3.5 w-3.5" /> QR Code
                 </Button>
-              </DialogTrigger>
+              }
+            />
               <DialogContent className="sm:max-w-sm flex flex-col items-center p-8">
                 <DialogHeader className="text-center mb-4">
                   <DialogTitle>Share Poll</DialogTitle>

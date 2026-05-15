@@ -5,7 +5,7 @@ services:
   - type: web
     name: pulseboard-api
     env: node
-    buildCommand: npm install -g pnpm && pnpm install && pnpm build:api
+    buildCommand: npm install -g pnpm@latest && pnpm config set side-effects-cache false && pnpm install --no-frozen-lockfile && pnpm build:api
     startCommand: cd apps/api && pnpm start
     healthCheckPath: /api/health
     envVars:
@@ -32,7 +32,7 @@ services:
   - type: web
     name: pulseboard-web
     env: static
-    buildCommand: npm install -g pnpm && pnpm install && pnpm build:web
+    buildCommand: npm install -g pnpm@latest && pnpm config set side-effects-cache false && pnpm install --no-frozen-lockfile && pnpm build:web
     staticPublishPath: apps/web/dist
     envVars:
       # The variables below will be marked as "missing" in the Render Dashboard

@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
-import { Separator } from '@/components/ui/separator'
 import { useCreatePoll } from '@/hooks/api/use-polls'
 import { useToast } from '@/hooks/use-toast'
 
@@ -43,7 +42,7 @@ export function CreatePollPage() {
       title: '',
       description: '',
       isAnonymous: false,
-      expiresAt: '',
+      expiresAt: null,
       questions: [
         {
           text: '',

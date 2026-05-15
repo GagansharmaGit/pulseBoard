@@ -155,3 +155,34 @@ pnpm dev
 - Frontend: `http://localhost:5173`
 - Backend: `http://localhost:8000`
 
+---
+
+## ☁️ Free Deployment Guide
+
+To host PulseBoard for free with permanent Database and Redis instances, follow this recommended stack:
+
+### 1. Database (PostgreSQL) - [Neon](https://neon.tech/)
+Render's built-in PostgreSQL is not free forever. Use **Neon** for a generous, serverless Postgres free tier:
+- Create a project on Neon.
+- Copy the **Connection String**.
+- Use this as your `DATABASE_URL` in the Render environment variables.
+
+### 2. Redis - [Upstash](https://upstash.com/)
+Upstash provides a "Serverless Redis" with a robust free tier that never expires:
+- Create a Redis database on Upstash.
+- Copy the **Redis URL** (format: `redis://default:password@endpoint:port`).
+- Use this as your `REDIS_URL` in the Render environment variables.
+
+### 3. Hosting - [Render](https://render.com/)
+Use the provided `render.yaml` to deploy:
+- Go to Render ➔ **New** ➔ **Blueprint**.
+- Connect this repository.
+- Render will automatically detect the services.
+- **Important**: You must manually add the `DATABASE_URL` and `REDIS_URL` you got from Neon and Upstash during the setup.
+
+---
+
+<div align="center">
+  <sub>Built with ❤️ for the Hackathon</sub>
+</div>
+

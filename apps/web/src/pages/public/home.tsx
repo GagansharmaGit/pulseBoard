@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { SignInButton, useAuth } from '@clerk/react'
-import { ArrowRight, Play, CheckCircle2, Box, Cloud, Zap, Database, Hexagon, Orbit, FileText, Share2, BarChart3, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Play, CheckCircle2, Box, Zap, FileText, Share2, BarChart3, ShieldCheck } from 'lucide-react'
 
 export function HomePage() {
   const { isSignedIn } = useAuth()
@@ -279,20 +279,4 @@ function FeatureCard({
   )
 }
 
-function StepCard({ number, title, description, delay }: { number: string, title: string, description: string, delay: number }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay }}
-      className="flex flex-col items-center text-center relative z-10"
-    >
-      <div className="w-16 h-16 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-2xl font-bold shadow-lg shadow-primary/30 mb-6">
-        {number}
-      </div>
-      <h3 className="text-2xl font-bold mb-3">{title}</h3>
-      <p className="text-muted-foreground">{description}</p>
-    </motion.div>
-  )
 }

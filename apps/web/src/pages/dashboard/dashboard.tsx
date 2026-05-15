@@ -279,7 +279,6 @@ function PollCard({ poll, delay }: { poll: PollSummary; delay: number }) {
   const isDraft     = poll.status === 'draft'
   const isActive    = poll.status === 'active'
   const isClosed    = poll.status === 'closed'
-  const isPublished = poll.status === 'published'
 
   const copyLink = () => {
     navigator.clipboard.writeText(`${window.location.origin}/p/${poll.id}`)
@@ -366,11 +365,13 @@ function PollCard({ poll, delay }: { poll: PollSummary; delay: number }) {
         </Button>
 
         <Dialog>
-          <DialogTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-7 px-2.5 text-xs text-muted-foreground hover:text-white hover:bg-white/6">
-              <QrCode className="mr-1.5 h-3 w-3" /> QR
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button variant="ghost" size="sm" className="h-7 px-2.5 text-xs text-muted-foreground hover:text-white hover:bg-white/6">
+                <QrCode className="mr-1.5 h-3 w-3" /> QR
+              </Button>
+            }
+          />
           <DialogContent className="sm:max-w-sm flex flex-col items-center p-8">
             <DialogHeader className="text-center mb-4">
               <DialogTitle>Share Poll</DialogTitle>
