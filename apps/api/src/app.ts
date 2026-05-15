@@ -8,6 +8,7 @@ import { notFound } from './common/middleware/not-found.middleware';
 import { healthRouter } from './modules/health/health.router';
 import { usersRouter } from './modules/users/users.router';
 import { pollsRouter } from './modules/polls/polls.router';
+import { responsesRouter } from './modules/responses/responses.router';
 import { webhooksRouter } from './modules/webhooks/webhooks.router';
 import { env } from './config/env';
 
@@ -37,6 +38,7 @@ export function createApp(): Express {
   app.use('/api/health', healthRouter);
   app.use('/api/users', usersRouter);
   app.use('/api/polls', pollsRouter);
+  app.use('/api/polls/:pollId/respond', responsesRouter);
 
   app.use(notFound);
   app.use(errorHandler);
