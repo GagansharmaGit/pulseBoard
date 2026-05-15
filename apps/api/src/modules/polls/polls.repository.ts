@@ -3,6 +3,7 @@ import { polls, questions, options } from '../../database/schema';
 import { eq, desc, asc, count, sql } from 'drizzle-orm';
 import { Poll, NewPoll } from '../../database/schema/polls';
 import { responses } from '../../database/schema/responses';
+import { logger } from '../../config/logger';
 
 type CreatePollData = {
   title: string;
