@@ -1,44 +1,76 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { Show, SignIn, SignUp } from '@clerk/react'
-import { Toaster } from './components/ui/toaster'
+import { createBrowserRouter, RouterProvider } from 'react-router-dom'
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { ClerkProvider } from '@clerk/react'
 
-const DashboardPage = () => <div className="p-8 text-center text-slate-500">Dashboard — Phase 7</div>
-const LandingPage = () => <div className="p-8 text-center text-slate-500">Landing — Phase 7</div>
+// Layouts
+import { RootLayout } from './components/layout/root-layout'
+import { DashboardLayout } from './components/layout/dashboard-layout'
 
-function ProtectedRoute({ children }: { children: React.ReactNode }) {
+// Pages
+import { HomePage } from './pages/public/home'
+import { DashboardPage } from './pages/dashboard/dashboard'
+import { CreatePollPage } from './pages/dashboard/create-poll'
+import { RespondPage } from './pages/public/respond'
+import { AnalyticsPage } from './pages/public/analytics'
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      refetchOnWindowFocus: false,
+    },
+  },
+})
+
+const PUBLISHABLE_KEY = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY
+
+if (!PUBLISHABLE_KEY) {
+  throw new Error('Missing Publishable Key')
+}
+
+const router = createBrowserRouter([
+  {
+    path: '/',
+    element: <RootLayout />,
+    children: [
+      {
+        index: true,
+        element: <HomePage />,
+      },
+      {
+        path: 'p/:pollId',
+        element: <RespondPage />,
+      },
+      {
+        path: 'p/:pollId/results',
+        element: <AnalyticsPage />,
+      },
+      {
+        path: 'dashboard',
+        element: <DashboardLayout />,
+        children: [
+          {
+            index: true,
+            element: <DashboardPage />,
+          },
+          {
+            path: 'polls/new',
+            element: <CreatePollPage />,
+          },
+        ],
+      },
+    ],
+  },
+])
+
+function App() {
   return (
-    <Show
-      when="signed-in"
-      fallback={<Navigate to="/sign-in" replace />}
-    >
-      {children}
-    </Show>
+    <ClerkProvider publishableKey={PUBLISHABLE_KEY} afterSignOutUrl="/">
+      <QueryClientProvider client={queryClient}>
+        <RouterProvider router={router} />
+      </QueryClientProvider>
+    </ClerkProvider>
   )
 }
 
-export default function App() {
-  return (
-    <>
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
-        <Route
-          path="/sign-in/*"
-          element={<SignIn routing="path" path="/sign-in" />}
-        />
-        <Route
-          path="/sign-up/*"
-          element={<SignUp routing="path" path="/sign-up" />}
-        />
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-      <Toaster />
-    </>
-  )
-}
+export default App
