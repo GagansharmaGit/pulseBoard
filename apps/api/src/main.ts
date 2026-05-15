@@ -4,15 +4,18 @@ import { env } from './config/env';
 import { logger } from './config/logger';
 import { redis } from './config/redis';
 import { pool } from './config/database';
+import { initializeSocket } from './config/socket';
 
 async function bootstrap() {
   await redis.connect();
 
   const app = createApp();
-
+  
   const server = app.listen(env.PORT, () => {
     logger.info({ port: env.PORT, env: env.NODE_ENV }, 'Server started');
   });
+
+  initializeSocket(server);
 
   const shutdown = async (signal: string) => {
     logger.info({ signal }, 'Shutdown signal received, starting graceful shutdown');

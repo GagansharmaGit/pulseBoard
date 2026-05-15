@@ -2,6 +2,7 @@ import { responsesRepository } from './responses.repository';
 import { pollsService } from '../polls/polls.service';
 import { ApiError } from '../../common/middleware/error-handler.middleware';
 import { applyResponseRateLimit } from '../../common/middleware/rate-limiter.middleware';
+import { getSocketServer } from '../../config/socket';
 import { logger } from '../../config/logger';
 import { Response as ResponseRow } from '../../database/schema/responses';
 
@@ -56,6 +57,12 @@ export class ResponsesService {
       userId ?? null,
       input.answers,
     );
+
+    // Broadcast to everyone viewing the analytics for this poll
+    getSocketServer().to(`poll:${pollId}`).emit('poll_updated', {
+      pollId,
+      responseId: response.id,
+    });
 
     logger.info(
       { pollId, responseId: response.id, isAnonymous: !userId },
