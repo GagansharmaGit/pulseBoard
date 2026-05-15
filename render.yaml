@@ -1,62 +1,48 @@
 services:
+  # ---------------------------------------------
+  # Backend API (Node.js Express)
+  # ---------------------------------------------
   - type: web
-    name: gpolls-api
-    runtime: docker
-    dockerfilePath: ./Dockerfile
-    plan: free
+    name: pulseboard-api
+    env: node
+    buildCommand: npm install -g pnpm && pnpm install && pnpm build:api
+    startCommand: cd apps/api && pnpm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: PORT
-        value: 3001
+        value: 8000
+      # The variables below will be marked as "missing" in the Render Dashboard
+      # until you paste your actual secrets into them.
       - key: DATABASE_URL
-        fromDatabase:
-          name: gpolls-db
-          property: connectionString
-      - key: REDIS_URL
-        fromService:
-          name: gpolls-redis
-          type: redis
-          property: connectionString
-      - key: CLERK_SECRET_KEY
         sync: false
-      - key: CLERK_PUBLISHABLE_KEY
+      - key: REDIS_URL
+        sync: false
+      - key: CLERK_SECRET_KEY
         sync: false
       - key: CLERK_WEBHOOK_SECRET
         sync: false
-      - key: CORS_ORIGIN
+      - key: FRONTEND_URL
         sync: false
 
+  # ---------------------------------------------
+  # Frontend SPA (Vite + React)
+  # ---------------------------------------------
   - type: web
-    name: gpolls-web
-    runtime: static
-    rootDir: apps/web
-    buildCommand: cd ../.. && pnpm install && pnpm --filter web build
-    staticPublishPath: dist
-    pullRequestPreviewsEnabled: true
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: no-cache
-      - path: /assets/*
-        name: Cache-Control
-        value: public, max-age=31536000, immutable
+    name: pulseboard-web
+    env: static
+    buildCommand: npm install -g pnpm && pnpm install && pnpm build:web
+    staticPublishPath: apps/web/dist
+    envVars:
+      # The variables below will be marked as "missing" in the Render Dashboard
+      - key: VITE_API_URL
+        sync: false
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
     routes:
+      # This forces all traffic (like /dashboard/polls/new) to go to index.html
+      # which is strictly required for React Router to work on a static host!
       - type: rewrite
         source: /*
         destination: /index.html
-    envVars:
-      - key: VITE_CLERK_PUBLISHABLE_KEY
-        sync: false
-
-  - type: redis
-    name: gpolls-redis
-    plan: free
-    maxmemoryPolicy: allkeys-lru
-
-databases:
-  - name: gpolls-db
-    plan: free
-    databaseName: gpolls
-    user: gpolls
