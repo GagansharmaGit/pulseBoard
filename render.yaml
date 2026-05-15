@@ -1,0 +1,62 @@
+services:
+  - type: web
+    name: gpolls-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gpolls-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          name: gpolls-redis
+          type: redis
+          property: connectionString
+      - key: CLERK_SECRET_KEY
+        sync: false
+      - key: CLERK_PUBLISHABLE_KEY
+        sync: false
+      - key: CLERK_WEBHOOK_SECRET
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
+
+  - type: web
+    name: gpolls-web
+    runtime: static
+    rootDir: apps/web
+    buildCommand: cd ../.. && pnpm install && pnpm --filter web build
+    staticPublishPath: dist
+    pullRequestPreviewsEnabled: true
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: no-cache
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_CLERK_PUBLISHABLE_KEY
+        sync: false
+
+  - type: redis
+    name: gpolls-redis
+    plan: free
+    maxmemoryPolicy: allkeys-lru
+
+databases:
+  - name: gpolls-db
+    plan: free
+    databaseName: gpolls
+    user: gpolls

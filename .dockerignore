@@ -1,0 +1,10 @@
+.git
+node_modules
+apps/web
+**/node_modules
+**/.env
+**/.env.local
+**/dist
+**/*.log
+docker-compose.yml
+README.md
