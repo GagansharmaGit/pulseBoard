@@ -14,7 +14,11 @@ export function initializeSocket(httpServer: HttpServer): SocketIOServer {
   const subClient = new Redis(env.REDIS_URL, {
     maxRetriesPerRequest: null,
     enableReadyCheck: false,
+    tls: (env.REDIS_URL.startsWith('rediss://') || env.REDIS_URL.includes('upstash.io')) ? {} : undefined,
   });
+
+  subClient.on('error', (err) => logger.error({ err }, 'Redis subClient error'));
+
 
   io = new SocketIOServer(httpServer, {
     cors: {
