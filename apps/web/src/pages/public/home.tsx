@@ -8,9 +8,6 @@ import {
   DialogContent,
   DialogTrigger,
   DialogClose,
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
 } from '@/components/ui/dialog'
 import React from 'react'
 
@@ -76,11 +73,13 @@ export function HomePage() {
                 </SignInButton>
               )}
               <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant="outline" className="h-12 px-8 text-base font-semibold rounded-full border-white/10 bg-transparent hover:bg-white/5 text-white">
-                    View Demo <Play className="ml-2 h-4 w-4 text-emerald-500" />
-                  </Button>
-                </DialogTrigger>
+                <DialogTrigger
+                  render={
+                    <Button variant="outline" className="h-12 px-8 text-base font-semibold rounded-full border-white/10 bg-transparent hover:bg-white/5 text-white">
+                      View Demo <Play className="ml-2 h-4 w-4 text-emerald-500" />
+                    </Button>
+                  }
+                />
                 <DialogContent className="sm:max-w-4xl p-0 bg-black/90 border-white/10 overflow-hidden">
                   <div className="relative pt-[56.25%]">
                     <iframe

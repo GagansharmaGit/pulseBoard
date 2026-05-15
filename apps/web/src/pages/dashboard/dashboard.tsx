@@ -398,15 +398,17 @@ function PollCard({ poll, delay }: { poll: PollSummary; delay: number }) {
         <div className="flex-1" />
 
         <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
-          <DialogTrigger asChild>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400 hover:bg-red-400/10"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger
+            render={
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400 hover:bg-red-400/10"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </Button>
+            }
+          />
           <DialogContent className="sm:max-w-md bg-[#0A0A0A] border-white/10">
             <DialogHeader>
               <DialogTitle className="text-white">Delete Poll</DialogTitle>
