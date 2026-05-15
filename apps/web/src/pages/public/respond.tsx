@@ -1,9 +1,11 @@
-import { useState } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '@clerk/react'
-import { CheckCircle2, AlertCircle, ArrowRight } from 'lucide-react'
+import { CheckCircle2, AlertCircle, ArrowRight, ArrowLeft, Clock } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { usePoll } from '@/hooks/api/use-polls'
@@ -17,9 +19,23 @@ export function RespondPage() {
   const submitResponse = useSubmitHook(pollId!)
   const { toast } = useToast()
   const { isSignedIn, isLoaded } = useAuth()
+  const navigate = useNavigate()
   
   const [answers, setAnswers] = useState<Record<string, string>>({})
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [hasVotedLocally, setHasVotedLocally] = useState(false)
+
+  useEffect(() => {
+    if (pollId) {
+      const votedStr = localStorage.getItem('gp_voted_polls')
+      if (votedStr) {
+        const votedArr = JSON.parse(votedStr)
+        if (votedArr.includes(pollId)) {
+          setHasVotedLocally(true)
+        }
+      }
+    }
+  }, [pollId])
 
   if (isLoading || !isLoaded) return <LoadingSpinner className="h-12 w-12" />
 
@@ -86,6 +102,41 @@ export function RespondPage() {
 
   const isClosed = poll.status === 'closed' || poll.status === 'published' || isExpired
   const requiresAuth = !poll.isAnonymous && !isSignedIn
+  
+  if (isClosed || hasVotedLocally) {
+    return (
+      <div className="container mx-auto max-w-2xl px-4 py-8 animate-slide-up">
+        <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6 -ml-4">
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back
+        </Button>
+        <Card className="text-center shadow-lg border-primary/10 bg-primary/5">
+          <CardHeader>
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/20 text-primary">
+              <CheckCircle2 className="h-8 w-8" />
+            </div>
+            <CardTitle className="text-2xl">
+              {hasVotedLocally ? 'You have already voted' : 'This poll has ended'}
+            </CardTitle>
+            <CardDescription className="text-base">
+              {hasVotedLocally 
+                ? 'Thank you for participating! Your response has been recorded.'
+                : 'This poll is no longer accepting new responses.'}
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="flex flex-col gap-3">
+            <Link to={`/p/${poll.id}/results`} className="w-full">
+              <Button className="w-full text-base h-11 shadow-md">
+                View Results <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
+            </Link>
+            <Link to="/" className="w-full">
+              <Button variant="outline" className="w-full">Create Your Own Poll</Button>
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    )
+  }
 
   const handleSelect = (questionId: string, optionId: string) => {
     setAnswers((prev) => ({ ...prev, [questionId]: optionId }))
@@ -114,7 +165,18 @@ export function RespondPage() {
     }
 
     submitResponse.mutate(payload, {
-      onSuccess: () => setIsSubmitted(true),
+      onSuccess: () => {
+        setIsSubmitted(true)
+        // Save to local storage to prevent future anonymous votes
+        if (pollId) {
+          const votedStr = localStorage.getItem('gp_voted_polls')
+          const votedArr = votedStr ? JSON.parse(votedStr) : []
+          if (!votedArr.includes(pollId)) {
+            votedArr.push(pollId)
+            localStorage.setItem('gp_voted_polls', JSON.stringify(votedArr))
+          }
+        }
+      },
       onError: (err: any) => {
         toast({
           title: 'Submission failed',
@@ -126,8 +188,20 @@ export function RespondPage() {
   }
 
   return (
-    <div className="container mx-auto max-w-2xl px-4 py-12 animate-slide-up">
+    <div className="container mx-auto max-w-2xl px-4 py-8 animate-slide-up">
+      <Button variant="ghost" onClick={() => navigate(-1)} className="mb-6 -ml-4">
+        <ArrowLeft className="mr-2 h-4 w-4" /> Back
+      </Button>
+
       <div className="mb-8 text-center space-y-3">
+        <div className="flex justify-center mb-4">
+          {poll.expiresAt && new Date(poll.expiresAt) > new Date() && (
+            <Badge variant="secondary" className="px-3 py-1 text-sm bg-primary/10 text-primary hover:bg-primary/20 border-0">
+              <Clock className="mr-1.5 h-3.5 w-3.5" />
+              Ends {formatDistanceToNow(new Date(poll.expiresAt), { addSuffix: true })}
+            </Badge>
+          )}
+        </div>
         <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl text-balance">
           {poll.title}
         </h1>
@@ -142,15 +216,6 @@ export function RespondPage() {
             <AlertCircle className="h-6 w-6 text-warning" />
             <p className="font-medium text-warning-foreground">
               This poll requires you to be signed in to vote.
-            </p>
-          </CardContent>
-        </Card>
-      ) : isClosed ? (
-        <Card className="mb-8 border-destructive/50 bg-destructive/5 shadow-sm">
-          <CardContent className="flex items-center gap-4 p-6">
-            <AlertCircle className="h-6 w-6 text-destructive" />
-            <p className="font-medium text-destructive-foreground">
-              This poll is no longer accepting responses.
             </p>
           </CardContent>
         </Card>
