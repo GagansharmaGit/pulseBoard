@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useUser } from '@clerk/react'
 import {
@@ -275,6 +275,7 @@ function PollCard({ poll, delay }: { poll: PollSummary; delay: number }) {
   const deletePoll = useDeletePoll()
   const updateStatus = useUpdatePollStatus()
   const navigate = useNavigate()
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const isDraft     = poll.status === 'draft'
   const isActive    = poll.status === 'active'
@@ -286,11 +287,12 @@ function PollCard({ poll, delay }: { poll: PollSummary; delay: number }) {
   }
 
   const handleDelete = () => {
-    if (confirm('Delete this poll? This cannot be undone.')) {
-      deletePoll.mutate(poll.id, {
-        onSuccess: () => toast({ title: 'Poll deleted' }),
-      })
-    }
+    deletePoll.mutate(poll.id, {
+      onSuccess: () => {
+        toast({ title: 'Poll deleted' })
+        setShowDeleteConfirm(false)
+      },
+    })
   }
 
   // Progress bar — cap at 100 for display
@@ -395,14 +397,42 @@ function PollCard({ poll, delay }: { poll: PollSummary; delay: number }) {
         {/* Spacer */}
         <div className="flex-1" />
 
-        <Button
-          variant="ghost"
-          size="sm"
-          className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400 hover:bg-red-400/10"
-          onClick={handleDelete}
-        >
-          <Trash2 className="h-3.5 w-3.5" />
-        </Button>
+        <Dialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+          <DialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-7 w-7 p-0 text-muted-foreground hover:text-red-400 hover:bg-red-400/10"
+            >
+              <Trash2 className="h-3.5 w-3.5" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-md bg-[#0A0A0A] border-white/10">
+            <DialogHeader>
+              <DialogTitle className="text-white">Delete Poll</DialogTitle>
+              <DialogDescription className="text-zinc-400">
+                Are you sure you want to delete <span className="text-white font-semibold">"{poll.title}"</span>? This action cannot be undone and all response data will be lost.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex justify-end gap-3 mt-4">
+              <Button
+                variant="outline"
+                className="border-white/10 bg-transparent hover:bg-white/5 text-white"
+                onClick={() => setShowDeleteConfirm(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                variant="destructive"
+                className="bg-red-500 hover:bg-red-600 text-white"
+                onClick={handleDelete}
+                disabled={deletePoll.isPending}
+              >
+                {deletePoll.isPending ? 'Deleting...' : 'Delete Poll'}
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Primary action footer */}

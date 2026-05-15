@@ -2,10 +2,21 @@ import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { SignInButton, useAuth } from '@clerk/react'
-import { ArrowRight, Play, CheckCircle2, Box, Zap, FileText, Share2, BarChart3, ShieldCheck } from 'lucide-react'
+import { ArrowRight, Play, CheckCircle2, Box, Zap, FileText, Share2, BarChart3, ShieldCheck, X } from 'lucide-react'
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogClose,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from '@/components/ui/dialog'
+import React from 'react'
 
 export function HomePage() {
   const { isSignedIn } = useAuth()
+
   return (
     <div className="flex flex-col items-center">
       {/* Hero Section Split Layout */}
@@ -64,9 +75,29 @@ export function HomePage() {
                   </Button>
                 </SignInButton>
               )}
-              <Button variant="outline" className="h-12 px-8 text-base font-semibold rounded-full border-white/10 bg-transparent hover:bg-white/5 text-white">
-                View Demo <Play className="ml-2 h-4 w-4 text-emerald-500" />
-              </Button>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant="outline" className="h-12 px-8 text-base font-semibold rounded-full border-white/10 bg-transparent hover:bg-white/5 text-white">
+                    View Demo <Play className="ml-2 h-4 w-4 text-emerald-500" />
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="sm:max-w-4xl p-0 bg-black/90 border-white/10 overflow-hidden">
+                  <div className="relative pt-[56.25%]">
+                    <iframe
+                      className="absolute inset-0 w-full h-full"
+                      src="https://www.youtube.com/embed/htd9-A9KwyQ?autoplay=1"
+                      title="PulseBoard Demo"
+                      frameBorder="0"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                    
+                  <DialogClose className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition-colors">
+                    <X className="h-4 w-4" />
+                  </DialogClose>
+                </DialogContent>
+              </Dialog>
             </div>
 
             <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-zinc-400 font-medium">

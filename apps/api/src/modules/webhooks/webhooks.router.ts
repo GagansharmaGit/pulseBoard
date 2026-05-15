@@ -23,7 +23,6 @@ router.post(
   '/clerk',
   rawBodyMiddleware,
   asyncHandler(async (req: Request & { rawBody?: string }, res: Response) => {
-    logger.info({ url: req.url, path: req.path }, 'Webhook route hit');
     const secret = env.CLERK_WEBHOOK_SECRET;
 
     if (!secret) {

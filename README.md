@@ -10,6 +10,10 @@
     <img src="https://img.shields.io/badge/Backend-Node.js%20%7C%20Express%20%7C%20Socket.io-0B1120?style=flat-square&logo=node.js&logoColor=white" alt="Backend" />
     <img src="https://img.shields.io/badge/Database-PostgreSQL%20%7C%20Drizzle-336791?style=flat-square&logo=postgresql&logoColor=white" alt="Database" />
   </div>
+
+  <br/>
+  <p>🚀 <strong>Live Demo: <a href="https://pulseboard-web-mzcg.onrender.com/">pulseboard.onrender.com</a></strong></p>
+  <p><em>Note: Hosted on Render's free tier. Initial load may take 30-50 seconds due to "cold start" spin-up.</em></p>
 </div>
 
 ---
@@ -184,5 +188,7 @@ Use the provided `render.yaml` to deploy:
 
 <div align="center">
   <sub>Built with ❤️ for the Hackathon</sub>
+  <br/>
+  <sub>Found a bug? Report it to <a href="mailto:sharmagagan192@gmail.com">sharmagagan192@gmail.com</a></sub>
 </div>
 

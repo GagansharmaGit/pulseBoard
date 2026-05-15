@@ -23,9 +23,7 @@ export type PollSummary = Awaited<ReturnType<PollsRepository['findByCreatorId']>
 
 export class PollsRepository {
   async create(creatorId: string, input: CreatePollData): Promise<Poll> {
-    logger.info({ creatorId, questionsCount: input.questions.length }, 'Starting poll creation transaction');
     return db.transaction(async (tx) => {
-      logger.info('Inserting poll row');
       const [poll] = await tx
         .insert(polls)
         .values({
@@ -38,10 +36,7 @@ export class PollsRepository {
         })
         .returning();
 
-      logger.info({ pollId: poll.id }, 'Poll row inserted, moving to questions');
-
       for (const q of input.questions) {
-        logger.info({ questionText: q.text }, 'Inserting question');
         const [question] = await tx
           .insert(questions)
           .values({
@@ -52,8 +47,6 @@ export class PollsRepository {
           })
           .returning();
 
-        logger.info({ questionId: question.id, optionsCount: q.options.length }, 'Question inserted, inserting options');
-
         await tx.insert(options).values(
           q.options.map((opt) => ({
             questionId: question.id,
@@ -63,7 +56,6 @@ export class PollsRepository {
         );
       }
 
-      logger.info({ pollId: poll.id }, 'Poll creation transaction completed successfully');
       return poll;
     });
   }
